@@ -27,7 +27,7 @@ Runs the latest release build of Orca.
 
 ```lua
 loadstring(
-  game:HttpGetAsync("https://raw.githubusercontent.com/richie0866/orca/master/public/latest.lua")
+  game:HttpGetAsync("https://raw.githubusercontent.com/Jfdedit3/orca/master/public/latest.improved.lua")
 )()
 ```
 
@@ -37,7 +37,7 @@ Runs a snapshot of new updates we have not published yet. You will get new featu
 
 ```lua
 loadstring(
-  game:HttpGetAsync("https://raw.githubusercontent.com/richie0866/orca/master/public/snapshot.lua")
+  game:HttpGetAsync("https://raw.githubusercontent.com/Jfdedit3/orca/master/public/snapshot.lua")
 )()
 ```
 
