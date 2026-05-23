@@ -1,12 +1,18 @@
 import { HttpService } from "@rbxts/services";
 import Roact from "@rbxts/roact";
 import { hooked, useState } from "@rbxts/roact-hooked";
+import Border from "components/Border";
 import Canvas from "components/Canvas";
 import Fill from "components/Fill";
+import Glow, { GlowRadius } from "components/Glow";
+import { useDelayedUpdate } from "hooks/common/use-delayed-update";
+import { useSpring } from "hooks/common/use-spring";
+import { useIsPageOpen } from "hooks/use-current-page";
 import * as http from "utils/http";
 import { arrayToMap } from "utils/array-util";
 import { hex } from "utils/color3";
 import { px, scale } from "utils/udim2";
+import { DashboardPage } from "store/models/dashboard.model";
 
 interface ScriptBloxScript {
 	_id: string;
@@ -15,7 +21,6 @@ interface ScriptBloxScript {
 		name?: string;
 	};
 	script?: string;
-	slug?: string;
 	verified?: boolean;
 	key?: boolean;
 }
@@ -31,6 +36,7 @@ const PANEL_LIGHT = hex("#172236");
 const TEXT = hex("#F8FBFF");
 const MUTED = hex("#AAB8CF");
 const ACCENT = hex("#56F0C2");
+const VIOLET = hex("#8F6BFF");
 const DANGER = hex("#FF6BA7");
 
 async function runScript(source: string | undefined, title: string) {
@@ -50,8 +56,14 @@ async function runScript(source: string | undefined, title: string) {
 
 function Scripts() {
 	const [query, setQuery] = useState("");
-	const [status, setStatus] = useState("Search ScriptBlox");
+	const [status, setStatus] = useState("Type something to search ScriptBlox");
 	const [results, setResults] = useState<ScriptBloxScript[]>([]);
+	const isOpen = useIsPageOpen(DashboardPage.Scripts);
+	const isActive = useDelayedUpdate(isOpen, 80);
+	const panelPosition = useSpring(isActive ? scale(0.5, 1) : new UDim2(0.5, 0, 1, 760), {
+		frequency: 2.2,
+		dampingRatio: 0.8,
+	});
 
 	async function search() {
 		const trimmed = query.gsub("^%s*(.-)%s*$", "%1")[0];
@@ -67,7 +79,7 @@ function Scripts() {
 			const response = HttpService.JSONDecode(await http.get(url)) as ScriptBloxResponse;
 			const scripts = response.result?.scripts ?? [];
 			setResults(scripts);
-			setStatus(scripts.size() === 0 ? "No results found" : `${scripts.size()} results`);
+			setStatus(scripts.size() === 0 ? "No results found" : `${scripts.size()} results found`);
 		} catch (err) {
 			setStatus(`Search failed: ${err}`);
 			setResults([]);
@@ -75,81 +87,54 @@ function Scripts() {
 	}
 
 	return (
-		<Canvas position={scale(0, 1)} anchor={new Vector2(0, 1)}>
-			<Fill color={PANEL} transparency={0.06} radius={16}>
+		<Canvas
+			anchor={new Vector2(0.5, 1)}
+			position={panelPosition}
+			size={new UDim2(1, 0, 1, 0)}
+		>
+			<Glow
+				radius={GlowRadius.Size198}
+				size={new UDim2(1, 120, 1, 120)}
+				position={px(-60, -34)}
+				color={VIOLET}
+				transparency={0.28}
+			/>
+			<Fill color={PANEL} transparency={0.08} radius={16}>
 				<uigradient
 					Color={
 						new ColorSequence([
-							new ColorSequenceKeypoint(0, hex("#172236")),
+							new ColorSequenceKeypoint(0, hex("#182437")),
+							new ColorSequenceKeypoint(0.55, PANEL),
 							new ColorSequenceKeypoint(1, hex("#0B1018")),
 						])
 					}
-					Rotation={90}
+					Rotation={92}
 				/>
 			</Fill>
+			<Border color={TEXT} radius={16} transparency={0.82} />
 
-			<Canvas padding={{ top: 32, left: 32, right: 32, bottom: 32 }}>
+			<Canvas padding={{ top: 26, left: 28, right: 28, bottom: 26 }}>
 				<textlabel
-					Text="ScriptBlox Search"
+					Text="ScriptBlox"
 					Font="GothamBlack"
-					TextSize={32}
+					TextSize={30}
 					TextColor3={TEXT}
 					TextXAlignment="Left"
-					Size={px(420, 40)}
+					Size={px(260, 36)}
 					BackgroundTransparency={1}
 				/>
 				<textlabel
 					Text="Powered by ScriptBlox.com"
 					Font="GothamBold"
-					TextSize={16}
+					TextSize={14}
 					TextColor3={MUTED}
 					TextXAlignment="Right"
-					Size={new UDim2(1, -440, 0, 32)}
-					Position={new UDim2(0, 440, 0, 6)}
+					Size={new UDim2(1, -280, 0, 24)}
+					Position={new UDim2(0, 280, 0, 8)}
 					BackgroundTransparency={1}
 				/>
 
-				<frame Size={new UDim2(1, -150, 0, 52)} Position={px(0, 64)} BackgroundColor3={PANEL_LIGHT} BorderSizePixel={0}>
-					<uicorner CornerRadius={new UDim(0, 10)} />
-					<textbox
-						Text={query}
-						PlaceholderText="Search scripts, games, hubs..."
-						PlaceholderColor3={MUTED}
-						Font="GothamBold"
-						TextSize={18}
-						TextColor3={TEXT}
-						TextXAlignment="Left"
-						ClearTextOnFocus={false}
-						Size={new UDim2(1, -28, 1, 0)}
-						Position={px(14, 0)}
-						BackgroundTransparency={1}
-						Change={{
-							Text: (box) => setQuery(box.Text),
-						}}
-						Event={{
-							FocusLost: (_, enterPressed) => {
-								if (enterPressed) {
-									search();
-								}
-							},
-						}}
-					/>
-				</frame>
-
-				<textbutton
-					Text="Search"
-					Font="GothamBlack"
-					TextSize={18}
-					TextColor3={hex("#07110E")}
-					Size={px(126, 52)}
-					Position={new UDim2(1, -126, 0, 64)}
-					BackgroundColor3={ACCENT}
-					BorderSizePixel={0}
-					AutoButtonColor={false}
-					Event={{ Activated: search }}
-				>
-					<uicorner CornerRadius={new UDim(0, 10)} />
-				</textbutton>
+				<SearchBox query={query} setQuery={setQuery} search={search} />
 
 				<textlabel
 					Text={status}
@@ -157,15 +142,15 @@ function Scripts() {
 					TextSize={15}
 					TextColor3={MUTED}
 					TextXAlignment="Left"
-					Size={new UDim2(1, 0, 0, 28)}
-					Position={px(0, 126)}
+					Size={new UDim2(1, 0, 0, 24)}
+					Position={px(0, 116)}
 					BackgroundTransparency={1}
 				/>
 
 				<scrollingframe
-					Size={new UDim2(1, 0, 1, -166)}
-					Position={px(0, 166)}
-					CanvasSize={px(0, math.max(results.size() * 94, 1))}
+					Size={new UDim2(1, 0, 1, -154)}
+					Position={px(0, 154)}
+					CanvasSize={px(0, math.max(results.size() * 86, 1))}
 					ScrollBarThickness={4}
 					ScrollBarImageColor3={ACCENT}
 					BackgroundTransparency={1}
@@ -181,49 +166,102 @@ function Scripts() {
 	);
 }
 
+function SearchBox(props: { query: string; setQuery: (query: string) => void; search: () => void }) {
+	return (
+		<>
+			<frame
+				Size={new UDim2(1, -138, 0, 48)}
+				Position={px(0, 58)}
+				BackgroundColor3={PANEL_LIGHT}
+				BackgroundTransparency={0.04}
+				BorderSizePixel={0}
+			>
+				<uicorner CornerRadius={new UDim(0, 10)} />
+				<textbox
+					Text={props.query}
+					PlaceholderText="Search scripts, games, hubs..."
+					PlaceholderColor3={MUTED}
+					Font="GothamBold"
+					TextSize={17}
+					TextColor3={TEXT}
+					TextXAlignment="Left"
+					ClearTextOnFocus={false}
+					Size={new UDim2(1, -28, 1, 0)}
+					Position={px(14, 0)}
+					BackgroundTransparency={1}
+					Change={{ Text: (box) => props.setQuery(box.Text) }}
+					Event={{
+						FocusLost: (_, enterPressed) => {
+							if (enterPressed) {
+								props.search();
+							}
+						},
+					}}
+				/>
+			</frame>
+			<textbutton
+				Text="Search"
+				Font="GothamBlack"
+				TextSize={16}
+				TextColor3={hex("#07110E")}
+				Size={px(118, 48)}
+				Position={new UDim2(1, -118, 0, 58)}
+				BackgroundColor3={ACCENT}
+				BorderSizePixel={0}
+				AutoButtonColor={false}
+				Event={{ Activated: props.search }}
+			>
+				<uicorner CornerRadius={new UDim(0, 10)} />
+			</textbutton>
+		</>
+	);
+}
+
 function ResultRow({ script, index }: { script: ScriptBloxScript; index: number }) {
 	const title = script.title ?? "Untitled script";
 	const game = script.game?.name ?? "Universal";
 	const details = `${game}${script.verified ? "  |  Verified" : ""}${script.key ? "  |  Key required" : ""}`;
+	const rowPosition = useSpring(px(0, index * 86), { frequency: 2.6, dampingRatio: 0.82 });
 
 	return (
 		<frame
-			Size={new UDim2(1, -8, 0, 78)}
-			Position={px(0, index * 94)}
+			Size={new UDim2(1, -8, 0, 72)}
+			Position={rowPosition}
 			BackgroundColor3={PANEL_LIGHT}
-			BackgroundTransparency={0.04}
+			BackgroundTransparency={0.05}
 			BorderSizePixel={0}
 		>
 			<uicorner CornerRadius={new UDim(0, 10)} />
+			<Border color={script.verified ? ACCENT : TEXT} radius={10} transparency={script.verified ? 0.62 : 0.88} />
 			<textlabel
 				Text={title}
 				Font="GothamBlack"
-				TextSize={20}
+				TextSize={19}
 				TextColor3={TEXT}
 				TextXAlignment="Left"
 				TextTruncate="AtEnd"
-				Size={new UDim2(1, -150, 0, 28)}
-				Position={px(18, 13)}
+				Size={new UDim2(1, -148, 0, 27)}
+				Position={px(16, 11)}
 				BackgroundTransparency={1}
 			/>
 			<textlabel
 				Text={details}
 				Font="GothamBold"
-				TextSize={14}
+				TextSize={13}
 				TextColor3={script.key ? DANGER : MUTED}
 				TextXAlignment="Left"
 				TextTruncate="AtEnd"
-				Size={new UDim2(1, -150, 0, 22)}
-				Position={px(18, 43)}
+				Size={new UDim2(1, -148, 0, 20)}
+				Position={px(16, 40)}
 				BackgroundTransparency={1}
 			/>
 			<textbutton
 				Text="Run"
 				Font="GothamBlack"
-				TextSize={16}
+				TextSize={15}
 				TextColor3={hex("#07110E")}
-				Size={px(92, 42)}
-				Position={new UDim2(1, -110, 0, 18)}
+				Size={px(86, 38)}
+				Position={new UDim2(1, -104, 0, 17)}
 				BackgroundColor3={ACCENT}
 				BorderSizePixel={0}
 				AutoButtonColor={false}
