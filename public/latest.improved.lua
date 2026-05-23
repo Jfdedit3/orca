@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 -- Orca improved clone
 -- Based on public/latest.lua. The generated bundle is preserved, but this wrapper adds:
 --   * duplicate execution protection when getgenv is available
