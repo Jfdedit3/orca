@@ -71,10 +71,11 @@ The **Apps** page acts as a hub for general and miscellaneous features.
 
 ### :newspaper: Scripts
 
-The **Scripts** page is a small collection of community-favorites you should try.
+The **Scripts** page lets you search ScriptBlox directly from Orca.
 
-- :shield: **CMD-X** - https://github.com/CMD-X
-- :shield: **Infinite Yield** - https://github.com/EdgeIY
+- :mag_right: Search scripts, games, and hubs.
+- :arrow_forward: Run a selected result from the results list.
+- :link: Powered by https://scriptblox.com
 
 ### :gear: Options
 
