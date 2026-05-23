@@ -2,17 +2,16 @@ import { HttpService } from "@rbxts/services";
 import Roact from "@rbxts/roact";
 import { hooked, useState } from "@rbxts/roact-hooked";
 import Border from "components/Border";
+import Card from "components/Card";
 import Canvas from "components/Canvas";
-import Fill from "components/Fill";
-import Glow, { GlowRadius } from "components/Glow";
-import { useDelayedUpdate } from "hooks/common/use-delayed-update";
 import { useSpring } from "hooks/common/use-spring";
-import { useIsPageOpen } from "hooks/use-current-page";
+import { useScale } from "hooks/use-scale";
+import { useTheme } from "hooks/use-theme";
+import { DashboardPage } from "store/models/dashboard.model";
 import * as http from "utils/http";
 import { arrayToMap } from "utils/array-util";
 import { hex } from "utils/color3";
 import { px, scale } from "utils/udim2";
-import { DashboardPage } from "store/models/dashboard.model";
 
 interface ScriptBloxScript {
 	_id: string;
@@ -31,12 +30,10 @@ interface ScriptBloxResponse {
 	};
 }
 
-const PANEL = hex("#101722");
 const PANEL_LIGHT = hex("#172236");
 const TEXT = hex("#F8FBFF");
 const MUTED = hex("#AAB8CF");
 const ACCENT = hex("#56F0C2");
-const VIOLET = hex("#8F6BFF");
 const DANGER = hex("#FF6BA7");
 
 async function runScript(source: string | undefined, title: string) {
@@ -58,12 +55,8 @@ function Scripts() {
 	const [query, setQuery] = useState("");
 	const [status, setStatus] = useState("Type something to search ScriptBlox");
 	const [results, setResults] = useState<ScriptBloxScript[]>([]);
-	const isOpen = useIsPageOpen(DashboardPage.Scripts);
-	const isActive = useDelayedUpdate(isOpen, 80);
-	const panelPosition = useSpring(isActive ? scale(0.5, 1) : new UDim2(0.5, 0, 1, 760), {
-		frequency: 2.2,
-		dampingRatio: 0.8,
-	});
+	const scaleFactor = useScale();
+	const theme = useTheme("options").themes;
 
 	async function search() {
 		const trimmed = query.gsub("^%s*(.-)%s*$", "%1")[0];
@@ -87,81 +80,66 @@ function Scripts() {
 	}
 
 	return (
-		<Canvas
-			anchor={new Vector2(0.5, 1)}
-			position={panelPosition}
-			size={new UDim2(1, 0, 1, 0)}
-		>
-			<Glow
-				radius={GlowRadius.Size198}
-				size={new UDim2(1, 120, 1, 120)}
-				position={px(-60, -34)}
-				color={VIOLET}
-				transparency={0.28}
-			/>
-			<Fill color={PANEL} transparency={0.08} radius={16}>
-				<uigradient
-					Color={
-						new ColorSequence([
-							new ColorSequenceKeypoint(0, hex("#182437")),
-							new ColorSequenceKeypoint(0.55, PANEL),
-							new ColorSequenceKeypoint(1, hex("#0B1018")),
-						])
-					}
-					Rotation={92}
-				/>
-			</Fill>
-			<Border color={TEXT} radius={16} transparency={0.82} />
+		<Canvas position={scale(0, 1)} anchor={new Vector2(0, 1)}>
+			<uiscale Scale={scaleFactor} />
+			<Card
+				index={1}
+				page={DashboardPage.Scripts}
+				theme={theme}
+				size={px(700, 648)}
+				position={new UDim2(0, 0, 1, 0)}
+			>
+				<Canvas padding={{ top: 26, left: 28, right: 28, bottom: 26 }}>
+					<textlabel
+						Text="ScriptBlox"
+						Font="GothamBlack"
+						TextSize={30}
+						TextColor3={theme.foreground}
+						TextXAlignment="Left"
+						Size={px(260, 36)}
+						BackgroundTransparency={1}
+					/>
+					<textlabel
+						Text="Powered by ScriptBlox.com"
+						Font="GothamBold"
+						TextSize={14}
+						TextColor3={theme.foreground}
+						TextTransparency={0.38}
+						TextXAlignment="Right"
+						Size={new UDim2(1, -280, 0, 24)}
+						Position={new UDim2(0, 280, 0, 8)}
+						BackgroundTransparency={1}
+					/>
 
-			<Canvas padding={{ top: 26, left: 28, right: 28, bottom: 26 }}>
-				<textlabel
-					Text="ScriptBlox"
-					Font="GothamBlack"
-					TextSize={30}
-					TextColor3={TEXT}
-					TextXAlignment="Left"
-					Size={px(260, 36)}
-					BackgroundTransparency={1}
-				/>
-				<textlabel
-					Text="Powered by ScriptBlox.com"
-					Font="GothamBold"
-					TextSize={14}
-					TextColor3={MUTED}
-					TextXAlignment="Right"
-					Size={new UDim2(1, -280, 0, 24)}
-					Position={new UDim2(0, 280, 0, 8)}
-					BackgroundTransparency={1}
-				/>
+					<SearchBox query={query} setQuery={setQuery} search={search} />
 
-				<SearchBox query={query} setQuery={setQuery} search={search} />
+					<textlabel
+						Text={status}
+						Font="GothamBold"
+						TextSize={15}
+						TextColor3={MUTED}
+						TextXAlignment="Left"
+						Size={new UDim2(1, 0, 0, 24)}
+						Position={px(0, 116)}
+						BackgroundTransparency={1}
+					/>
 
-				<textlabel
-					Text={status}
-					Font="GothamBold"
-					TextSize={15}
-					TextColor3={MUTED}
-					TextXAlignment="Left"
-					Size={new UDim2(1, 0, 0, 24)}
-					Position={px(0, 116)}
-					BackgroundTransparency={1}
-				/>
-
-				<scrollingframe
-					Size={new UDim2(1, 0, 1, -154)}
-					Position={px(0, 154)}
-					CanvasSize={px(0, math.max(results.size() * 86, 1))}
-					ScrollBarThickness={4}
-					ScrollBarImageColor3={ACCENT}
-					BackgroundTransparency={1}
-					BorderSizePixel={0}
-				>
-					{arrayToMap(results, (script, index) => [
-						script._id,
-						<ResultRow script={script} index={index} />,
-					])}
-				</scrollingframe>
-			</Canvas>
+					<scrollingframe
+						Size={new UDim2(1, 0, 1, -154)}
+						Position={px(0, 154)}
+						CanvasSize={px(0, math.max(results.size() * 86, 1))}
+						ScrollBarThickness={4}
+						ScrollBarImageColor3={ACCENT}
+						BackgroundTransparency={1}
+						BorderSizePixel={0}
+					>
+						{arrayToMap(results, (script, index) => [
+							script._id,
+							<ResultRow script={script} index={index} />,
+						])}
+					</scrollingframe>
+				</Canvas>
+			</Card>
 		</Canvas>
 	);
 }
