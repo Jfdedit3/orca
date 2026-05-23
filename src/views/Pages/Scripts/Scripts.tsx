@@ -86,28 +86,28 @@ function Scripts() {
 				index={1}
 				page={DashboardPage.Scripts}
 				theme={theme}
-				size={px(700, 648)}
+				size={px(326, 648)}
 				position={new UDim2(0, 0, 1, 0)}
 			>
-				<Canvas padding={{ top: 26, left: 28, right: 28, bottom: 26 }}>
+				<Canvas padding={{ top: 24, left: 24, right: 24, bottom: 24 }}>
 					<textlabel
 						Text="ScriptBlox"
 						Font="GothamBlack"
-						TextSize={30}
+						TextSize={22}
 						TextColor3={theme.foreground}
 						TextXAlignment="Left"
-						Size={px(260, 36)}
+						Size={px(160, 30)}
 						BackgroundTransparency={1}
 					/>
 					<textlabel
-						Text="Powered by ScriptBlox.com"
+						Text="ScriptBlox.com"
 						Font="GothamBold"
-						TextSize={14}
+						TextSize={12}
 						TextColor3={theme.foreground}
 						TextTransparency={0.38}
 						TextXAlignment="Right"
-						Size={new UDim2(1, -280, 0, 24)}
-						Position={new UDim2(0, 280, 0, 8)}
+						Size={new UDim2(1, -168, 0, 22)}
+						Position={new UDim2(0, 168, 0, 5)}
 						BackgroundTransparency={1}
 					/>
 
@@ -116,18 +116,18 @@ function Scripts() {
 					<textlabel
 						Text={status}
 						Font="GothamBold"
-						TextSize={15}
+						TextSize={13}
 						TextColor3={MUTED}
 						TextXAlignment="Left"
 						Size={new UDim2(1, 0, 0, 24)}
-						Position={px(0, 116)}
+						Position={px(0, 144)}
 						BackgroundTransparency={1}
 					/>
 
 					<scrollingframe
-						Size={new UDim2(1, 0, 1, -154)}
-						Position={px(0, 154)}
-						CanvasSize={px(0, math.max(results.size() * 86, 1))}
+						Size={new UDim2(1, 0, 1, -176)}
+						Position={px(0, 176)}
+						CanvasSize={px(0, math.max(results.size() * 92, 1))}
 						ScrollBarThickness={4}
 						ScrollBarImageColor3={ACCENT}
 						BackgroundTransparency={1}
@@ -148,8 +148,8 @@ function SearchBox(props: { query: string; setQuery: (query: string) => void; se
 	return (
 		<>
 			<frame
-				Size={new UDim2(1, -138, 0, 48)}
-				Position={px(0, 58)}
+				Size={new UDim2(1, 0, 0, 42)}
+				Position={px(0, 48)}
 				BackgroundColor3={PANEL_LIGHT}
 				BackgroundTransparency={0.04}
 				BorderSizePixel={0}
@@ -157,10 +157,10 @@ function SearchBox(props: { query: string; setQuery: (query: string) => void; se
 				<uicorner CornerRadius={new UDim(0, 10)} />
 				<textbox
 					Text={props.query}
-					PlaceholderText="Search scripts, games, hubs..."
+					PlaceholderText="Search scripts..."
 					PlaceholderColor3={MUTED}
 					Font="GothamBold"
-					TextSize={17}
+					TextSize={15}
 					TextColor3={TEXT}
 					TextXAlignment="Left"
 					ClearTextOnFocus={false}
@@ -180,10 +180,10 @@ function SearchBox(props: { query: string; setQuery: (query: string) => void; se
 			<textbutton
 				Text="Search"
 				Font="GothamBlack"
-				TextSize={16}
+				TextSize={15}
 				TextColor3={hex("#07110E")}
-				Size={px(118, 48)}
-				Position={new UDim2(1, -118, 0, 58)}
+				Size={new UDim2(1, 0, 0, 38)}
+				Position={px(0, 96)}
 				BackgroundColor3={ACCENT}
 				BorderSizePixel={0}
 				AutoButtonColor={false}
@@ -199,11 +199,11 @@ function ResultRow({ script, index }: { script: ScriptBloxScript; index: number 
 	const title = script.title ?? "Untitled script";
 	const game = script.game?.name ?? "Universal";
 	const details = `${game}${script.verified ? "  |  Verified" : ""}${script.key ? "  |  Key required" : ""}`;
-	const rowPosition = useSpring(px(0, index * 86), { frequency: 2.6, dampingRatio: 0.82 });
+	const rowPosition = useSpring(px(0, index * 92), { frequency: 2.6, dampingRatio: 0.82 });
 
 	return (
 		<frame
-			Size={new UDim2(1, -8, 0, 72)}
+			Size={new UDim2(1, -4, 0, 78)}
 			Position={rowPosition}
 			BackgroundColor3={PANEL_LIGHT}
 			BackgroundTransparency={0.05}
@@ -214,32 +214,32 @@ function ResultRow({ script, index }: { script: ScriptBloxScript; index: number 
 			<textlabel
 				Text={title}
 				Font="GothamBlack"
-				TextSize={19}
+				TextSize={16}
 				TextColor3={TEXT}
 				TextXAlignment="Left"
 				TextTruncate="AtEnd"
-				Size={new UDim2(1, -148, 0, 27)}
-				Position={px(16, 11)}
+				Size={new UDim2(1, -24, 0, 24)}
+				Position={px(12, 9)}
 				BackgroundTransparency={1}
 			/>
 			<textlabel
 				Text={details}
 				Font="GothamBold"
-				TextSize={13}
+				TextSize={12}
 				TextColor3={script.key ? DANGER : MUTED}
 				TextXAlignment="Left"
 				TextTruncate="AtEnd"
-				Size={new UDim2(1, -148, 0, 20)}
-				Position={px(16, 40)}
+				Size={new UDim2(1, -24, 0, 18)}
+				Position={px(12, 32)}
 				BackgroundTransparency={1}
 			/>
 			<textbutton
 				Text="Run"
 				Font="GothamBlack"
-				TextSize={15}
+				TextSize={13}
 				TextColor3={hex("#07110E")}
-				Size={px(86, 38)}
-				Position={new UDim2(1, -104, 0, 17)}
+				Size={px(72, 24)}
+				Position={new UDim2(1, -84, 0, 48)}
 				BackgroundColor3={ACCENT}
 				BorderSizePixel={0}
 				AutoButtonColor={false}
