@@ -54,6 +54,24 @@ function Card({ index, page, theme, size, position, [Roact.Children]: children }
 				radius={16}
 			/>
 
+			<frame Size={px(0, 1)} BackgroundTransparency={1} />
+			<frame
+				Size={new UDim2(1, -24, 0, 1)}
+				Position={px(12, 12)}
+				BackgroundColor3={theme.foreground}
+				BackgroundTransparency={0.9}
+				BorderSizePixel={0}
+			/>
+			<frame
+				Size={new UDim2(1, -28, 0, 64)}
+				Position={px(14, 14)}
+				BackgroundColor3={theme.foreground}
+				BackgroundTransparency={0.96}
+				BorderSizePixel={0}
+			>
+				<uigradient Transparency={new NumberSequence(0.15, 1)} Rotation={90} />
+			</frame>
+
 			{children}
 
 			{/* Effects */}

@@ -43,6 +43,7 @@ function getScale(height: number) {
 function Dashboard() {
 	const viewportSize = useViewportSize();
 	const isOpen = useAppSelector((state) => state.dashboard.isOpen);
+	const openTransparency = useSpring(isOpen ? 0 : 1, {});
 
 	const [scaleFactor, padding] = useMemo(() => {
 		return [viewportSize.map((s) => getScale(s.Y)), viewportSize.map((s) => getPaddingY(s.Y))];
@@ -53,11 +54,55 @@ function Dashboard() {
 			{/* Shading */}
 			<frame
 				Size={scale(1, 1)}
-				BackgroundColor3={hex("#000000")}
-				BackgroundTransparency={useSpring(isOpen ? 0 : 1, {})}
+				BackgroundColor3={hex("#07080D")}
+				BackgroundTransparency={openTransparency}
 				BorderSizePixel={0}
 			>
-				<uigradient Transparency={new NumberSequence(1, 0.25)} Rotation={90} />
+				<uigradient
+					Color={
+						new ColorSequence([
+							new ColorSequenceKeypoint(0, hex("#07080D")),
+							new ColorSequenceKeypoint(0.45, hex("#101726")),
+							new ColorSequenceKeypoint(1, hex("#07080D")),
+						])
+					}
+					Transparency={new NumberSequence(0.08, 0.32)}
+					Rotation={90}
+				/>
+			</frame>
+
+			<imagelabel
+				Image="rbxassetid://8992238178"
+				ImageColor3={hex("#56F0C2")}
+				ImageTransparency={useSpring(isOpen ? 0.78 : 1, {})}
+				Size={new UDim2(0, 620, 0, 360)}
+				Position={new UDim2(0, -170, 0, -120)}
+				BackgroundTransparency={1}
+			/>
+			<imagelabel
+				Image="rbxassetid://8992238178"
+				ImageColor3={hex("#8F6BFF")}
+				ImageTransparency={useSpring(isOpen ? 0.82 : 1, {})}
+				Size={new UDim2(0, 720, 0, 420)}
+				Position={new UDim2(1, -460, 1, -290)}
+				BackgroundTransparency={1}
+			/>
+			<frame
+				Size={scale(1, 1)}
+				BackgroundColor3={hex("#FFFFFF")}
+				BackgroundTransparency={useSpring(isOpen ? 0.96 : 1, {})}
+				BorderSizePixel={0}
+			>
+				<uigradient
+					Color={
+						new ColorSequence([
+							new ColorSequenceKeypoint(0, hex("#FFFFFF")),
+							new ColorSequenceKeypoint(1, hex("#FFFFFF")),
+						])
+					}
+					Transparency={new NumberSequence(0.86, 1)}
+					Rotation={12}
+				/>
 			</frame>
 
 			{/* Body */}

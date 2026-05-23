@@ -1,3 +1,4 @@
+import { aurora } from "themes/aurora";
 import { darkTheme } from "themes/dark-theme";
 import { frostedGlass } from "themes/frosted-glass";
 import { highContrast } from "themes/high-contrast";
@@ -6,7 +7,7 @@ import { obsidian } from "themes/obsidian";
 import { sorbet } from "themes/sorbet";
 import { Theme } from "themes/theme.interface";
 
-const themes: Theme[] = [sorbet, darkTheme, lightTheme, frostedGlass, obsidian, highContrast];
+const themes: Theme[] = [aurora, sorbet, darkTheme, lightTheme, frostedGlass, obsidian, highContrast];
 
 export function getThemes() {
 	return themes;
